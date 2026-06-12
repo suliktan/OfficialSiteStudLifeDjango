@@ -1,0 +1,25 @@
+# Django Core
+Django>=4.2,<5.0
+python-dotenv>=1.0.0
+
+# Database
+psycopg2-binary>=2.9.9
+
+# Internationalization (i18n)
+django-modeltranslation>=0.18.0
+
+# Media Library
+django-filer>=3.1.0
+easy-thumbnails>=2.8.5
+
+# HTTP Requests for CRM/Google Sheets integration
+requests>=2.31.0
+
+# Image Processing
+Pillow>=10.0.0
+
+# Production Server (optional)
+gunicorn>=21.2.0
+
+# Development Tools
+django-debug-toolbar>=4.2.0
