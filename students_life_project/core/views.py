@@ -16,12 +16,38 @@ from .form_handlers import FormSubmissionHandler
 logger = logging.getLogger(__name__)
 
 
+def get_client_ip(request):
+    """
+    Get client IP address from request, handling proxies.
+    """
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0].strip()
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
+
 def home(request):
     """
     Homepage view with context from site_settings context processor.
     Displays featured testimonials, documents, and about sections.
     """
     return render(request, 'core/home.html')
+
+
+# --- ДОБАВЛЕННЫЕ ОБРАБОТЧИКИ ОШИБОК ДЛЯ ИСПРАВЛЕНИЯ SYSTEMCHECKERROR ---
+
+def custom_404(request, exception):
+    """Кастомная страница ошибки 404 (Страница не найдена)"""
+    return render(request, 'core/404.html', status=404)
+
+
+def custom_500(request):
+    """Кастомная страница ошибки 500 (Ошибка сервера)"""
+    return render(request, 'core/500.html', status=500)
+
+# ----------------------------------------------------------------------
 
 
 @require_POST
@@ -90,7 +116,7 @@ def consultation_form_submit(request):
         handler = FormSubmissionHandler(form_data)
         results = handler.submit_all(required_fields=['first_name', 'email', 'phone'])
         
-        if results['success']:
+        if Magic := results['success']:
             if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
                 return JsonResponse({
                     'success': True,
@@ -132,15 +158,3 @@ def consultation_success(request):
         'title': _('Consultation Requested'),
         'message': _('Thank you! We will contact you soon for a free consultation.')
     })
-
-
-def get_client_ip(request):
-    """
-    Get client IP address from request, handling proxies.
-    """
-    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
-    if x_forwarded_for:
-        ip = x_forwarded_for.split(',')[0].strip()
-    else:
-        ip = request.META.get('REMOTE_ADDR')
-    return ip
